@@ -1,0 +1,26 @@
+.spin {
+  height: 20px;
+  width: 20px;
+  margin: auto;
+  background-color: #035e63;
+  border-radius: 50%;
+  animation: motion 2.5s ease-in-out infinite;
+}
+
+@keyframes motion {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  25% {
+    transform: translateX(-50px) scale(0.3);
+  }
+  50% {
+    transform: translateX(0) scale(1);
+  }
+  75% {
+    transform: translateX(50px) scale(0.3);
+  }
+  100% {
+    transform: translateX(0) scale(1);
+  }
+}
