@@ -41,8 +41,9 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         authCtx.login(data.idToken, enteredEmail);
+        authCtx.completeProfile();
         alert("Login successful");
-        navigate("/welcomepage");
+        navigate("/home");
       } else {
         const errorData = await response.json();
         throw new Error(errorData.error.message);
@@ -56,21 +57,21 @@ const Login = () => {
   };
 
   return (
-    <div className={"lContainer"}>
+    <div className="lContainer">
       <div className="1Item">
         <div className="loginForm">
-          <h1 className={"h1"}>Login</h1>
+          <h1 className="h1">Login</h1>
           <Form onSubmit={submitHandler} className="login-form">
-            <h3 className={"h3"}>Email</h3>
+            <h3 className="h3">Email</h3>
             <Form.Group controlId="formBasicEmail" className="mb-3">
               <Form.Control
-                className={"input"}
+                className="input"
                 ref={emailInputRef}
                 type="email"
                 placeholder="Enter email"
               />
             </Form.Group>
-            <h3 className={"h3"}>Password</h3>
+            <h3 className="h3">Password</h3>
             <Form.Group controlId="formBasicPassword" className="mb-3">
               <Form.Control
                 className="input"
