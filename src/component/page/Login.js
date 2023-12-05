@@ -1,8 +1,8 @@
 import React, { useContext, useRef, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import AuthContext from "./store/auth-context";
-import Spinner from "./UI/Spinner";
+import AuthContext from "../store/auth-context";
+import Spinner from "../UI/Spinner";
 import "./Main.css";
 
 const Login = () => {
@@ -41,7 +41,6 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         authCtx.login(data.idToken, enteredEmail);
-        authCtx.completeProfile();
         alert("Login successful");
         navigate("/home");
       } else {

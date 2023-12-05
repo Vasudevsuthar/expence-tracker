@@ -60,6 +60,26 @@
   border: 2px solid rgb(213, 217, 206);
 }
 
+.forgetbtn {
+  margin-left: 15px;
+  width: 20%;
+  border-radius: 10px;
+  font-size: 8px;
+  color: #fff;
+  background-color: #ed2f3fcf;
+  border: solid 1px rgb(213, 217, 206);
+}
+
+.forgetbtn:hover {
+  background-color: #9d0c18cf;
+  border: 1px solid rgb(213, 217, 206);
+}
+
+.forgetbtn:active {
+  background-color: #ed2f3fcf; 
+}
+
+
 .hidden {
   display: none;
 }

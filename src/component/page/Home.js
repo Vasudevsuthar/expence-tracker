@@ -1,9 +1,11 @@
 import React, { useContext, useState } from "react";
 import AuthContext from "../store/auth-context";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import classes from "./Home.module.css";
+import { Button } from "react-bootstrap";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [error, setError] = useState("");
   const authCtx = useContext(AuthContext);
 
@@ -44,6 +46,15 @@ const Home = () => {
       });
   };
 
+  const logoutHandler = () => {
+    authCtx.logout();
+    localStorage.removeItem("email");
+    localStorage.removeItem("token");
+    localStorage.removeItem("allExpense");
+    localStorage.clear();
+    navigate("/");
+  };
+
   return (
     <div className={classes.lContainer}>
       <div className={classes.header}>
@@ -53,6 +64,7 @@ const Home = () => {
             Your Profile is Incomplete <Link to="/profile">Complete Now</Link>
           </i>
         )}
+        <Button style={{padding: "5px", margin:"10px"}} variant="danger" onClick={logoutHandler}>Log-Out</Button>
       </div>
       <div className={classes.container}>
         {authCtx.isLoggedIn && (

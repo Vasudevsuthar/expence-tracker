@@ -2,9 +2,9 @@ import React, { useContext, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { Link, useNavigate } from "react-router-dom";
-import Spinner from "./UI/Spinner";
+import Spinner from "../UI/Spinner";
 import "./Main.css";
-import AuthContext from "./store/auth-context";
+import AuthContext from "../store/auth-context";
 
 const Signup = () => {
   const navigate = useNavigate();

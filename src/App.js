@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Singup from './component/Singup';
-import Login from "./component/Login";
+import Singup from './component/page/Singup';
+import Login from "./component/page/Login";
 import Home from "./component/page/Home";
 import Profile from "./component/page/Profile";
 

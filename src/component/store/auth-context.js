@@ -33,21 +33,13 @@ export const AuthContextProvider = (props) => {
     setEmail(email);
   }
 
-  function completeProfileHandler() {
-    setIsProfileComplete(true);
-  }
-
   const userIsLoggedIn = !!token;
 
   const logoutHandler = () => {
     setToken(null);
     setEmail(null);
-    setIsProfileComplete(false);
     localStorage.removeItem("token");
     localStorage.removeItem("email");
-    localStorage.removeItem("isProfileComplete");
-    setToken("");
-    setEmail("");
   };
 
 
@@ -60,7 +52,6 @@ export const AuthContextProvider = (props) => {
     isProfileComplete: isProfileComplete,
     login: loginHandler,
     logout: logoutHandler,
-    completeProfile: completeProfileHandler,
   };
 
   return (
