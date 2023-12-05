@@ -18,15 +18,13 @@ export const AuthContextProvider = (props) => {
 
 
   const [token, setToken] = useState(initialToken);
-  const [email, setEmail] = useState(initialEmail);
-  const [isProfileComplete, setIsProfileComplete] = useState(initialProfileComplete);
+  const [email, setEmail] = useState(initialEmail);;
 
 
   useEffect(() => {
     localStorage.setItem("token", token);
     localStorage.setItem("email", email);
-    localStorage.setItem("isProfileComplete", isProfileComplete);
-  }, [token, email, isProfileComplete]);
+  }, [token, email]);
 
   function loginHandler(token, email) {
     setToken(token);
@@ -49,7 +47,6 @@ export const AuthContextProvider = (props) => {
     token: token,
     email: email,
     isLoggedIn: userIsLoggedIn,
-    isProfileComplete: isProfileComplete,
     login: loginHandler,
     logout: logoutHandler,
   };

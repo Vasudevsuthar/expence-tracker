@@ -80,6 +80,8 @@ const Login = () => {
               />
             </Form.Group>
 
+            <Link to="/forgotpass" style={{marginLeft:'90px'}}>Forgot Password?</Link>
+
             {!isLoading && (
               <Button type="submit" className="login-form-button">
                 Login

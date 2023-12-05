@@ -4,6 +4,7 @@ import Singup from './component/page/Singup';
 import Login from "./component/page/Login";
 import Home from "./component/page/Home";
 import Profile from "./component/page/Profile";
+import ForgotPass from "./component/page/ForgotPass";
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       <Route path="/Login" element={<Login />} />
       <Route path="/home" element={<Home />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/forgotpass" element={<ForgotPass />} />
     </Routes>
   </Router>
   );
