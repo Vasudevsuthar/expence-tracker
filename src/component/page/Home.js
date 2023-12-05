@@ -64,7 +64,7 @@ const Home = () => {
             Your Profile is Incomplete <Link to="/profile">Complete Now</Link>
           </i>
         )}
-        <Button style={{padding: "5px", margin:"10px"}} variant="danger" onClick={logoutHandler}>Log-Out</Button>
+        
       </div>
       <div className={classes.container}>
         {authCtx.isLoggedIn && (

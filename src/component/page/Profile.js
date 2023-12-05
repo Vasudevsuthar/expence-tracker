@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import  "./Profile.css";
 import { BsGithub, BsGlobe } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
+import AuthContext from "../store/auth-context";
 
 
 const Profile = () => {
@@ -96,6 +97,8 @@ const Profile = () => {
   
 
   return (
+    <>
+    {}
     <div className="lcontainer">
       <div className="topText">
         <div className="quote">
@@ -147,6 +150,7 @@ const Profile = () => {
         {loading && <h2>Submitting Data...</h2>}
       </div>
     </div>
+    </>
   );
 };
 
