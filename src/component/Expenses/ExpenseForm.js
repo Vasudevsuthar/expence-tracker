@@ -4,6 +4,7 @@ import AuthContext from "../store/auth-context";
 import { useDispatch } from "react-redux";
 import { expenseAction } from "../store/expenseSlice";
 import "./Style.css";
+import Expense from "./Expense";
 
 const ExpenseTracker = () => {
   const authCtx = useContext(AuthContext);
@@ -18,6 +19,7 @@ const ExpenseTracker = () => {
   const [expenses, setExpenses] = useState([]);
   const userEmail = localStorage.getItem("email");
   const cleanedEmail = userEmail.replace(/[@.]/g, "");
+  const [isEdit, setEdit] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -36,6 +38,38 @@ const ExpenseTracker = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+
+    if (isEdit === true) {
+      const newExpense = {
+        amount: expenseData.amount,
+        description: expenseData.description,
+        category: expenseData.category,
+      };
+      const id = localStorage.getItem("id")
+      fetch(
+        `https://expensetracker-dc96e-default-rtdb.firebaseio.com/userExpenses${cleanedEmail}/${id}.json`,
+        {
+          method: "PUT",
+          body: JSON.stringify(newExpense),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+        .then((response) => {
+          setEdit(false);
+          console.log(response);
+          fetchExpenses();
+        })
+        .catch((err) => {
+          alert("Not able to edit successfully - " + err);
+        });
+        setExpenseData({
+          amount: "",
+          description: "",
+          category: "",
+        });
+    } else {
     const newExpense = {
       amount: expenseData.amount,
       description: expenseData.description,
@@ -60,7 +94,7 @@ const ExpenseTracker = () => {
       })
       .then((data) => {
         console.log("Expense added successfully!", data);
-        alert("Expense added successfully!")
+        alert("Expense added successfully!");
         const expenseDataWithId = { ...newExpense, id: data.name };
         setExpenses((prevExpenses) => [...prevExpenses, expenseDataWithId]);
         fetchExpenses();
@@ -75,6 +109,7 @@ const ExpenseTracker = () => {
       description: "",
       category: "",
     });
+  }
   };
 
   const fetchExpenses = useCallback(() => {
@@ -116,6 +151,47 @@ const ExpenseTracker = () => {
   useEffect(() => {
     fetchExpenses();
   }, [fetchExpenses]);
+
+  const deleteExpenseHandler = (id) => {
+    fetch(
+      `https://expensetracker-dc96e-default-rtdb.firebaseio.com/userExpenses${cleanedEmail}/${id}.json`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Something went wrong!");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Expense deleted successfully!", data);
+        alert("Expnse deleted successfully!");
+        fetchExpenses();
+      })
+      .catch((error) => {
+        console.error("Errpr deleting expense:", error);
+        alert("Error deleting expense");
+      });
+  };
+  const editeExpenseHandler = (id) => {
+    let editExpense = expenses.find((expense) => {
+      return expense.id === id;
+    });
+    setEdit(true);
+    setExpenseData({
+      amount: editExpense.amount,
+      description: editExpense.description,
+      category: editExpense.category,
+    });
+    console.log(editExpense);
+    localStorage.setItem("id", id);
+  };
+
 
   return (
     <div className="Container">
@@ -186,6 +262,20 @@ const ExpenseTracker = () => {
                 {expenses.map((expense) => (
                   <li key={expense.id}>
                     {`Amount: ${expense.amount}, Description: ${expense.description}, Category: ${expense.category}`}
+                    <Button
+                      variant="danger"
+                      style={{ marginLeft: "10px" }}
+                      onClick={() => deleteExpenseHandler(expense.id)}
+                    >
+                      Delete
+                    </Button>
+                    <Button
+                      variant="success"
+                      style={{ marginLeft: "10px", margin: "3px" }}
+                      onClick={() => editeExpenseHandler(expense.id)}
+                    >
+                      Edit
+                    </Button>
                   </li>
                 ))}
               </ul>
