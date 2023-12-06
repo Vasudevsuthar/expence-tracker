@@ -9,4 +9,4 @@ const Expense = () => {
   )
 }
 
-export default Expense
+export default Expense;

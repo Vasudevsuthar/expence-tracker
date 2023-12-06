@@ -1,8 +1,4 @@
 .lContainer {
-  background: linear-gradient(-45deg, #80ed99, #22577a, #076b70, #4ef037);
-  background-size: 400% 400%;
-  -webkit-animation: Gradient 12s ease infinite;
-  animation: Gradient 12s ease infinite;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr;
   width: 100%;
@@ -11,15 +7,15 @@
 
 .header{
   display: flex;
-  color: #fff;
+  color: #0c0909;
   text-align: center;
   margin-top: -15px;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #141313;
 }
 
 .h3 {
   font-size: 2rem;
-  color: #fff;
+  color: #0b0b0b;
   text-align: center;
   margin-bottom: 10px;
   
@@ -30,7 +26,7 @@
   margin-left: auto;
   display: block;
   font-style: italic;
-  color: #fff;
+  color: #111010;
   text-align: center;
   margin-top: 10px;
 }
@@ -80,14 +76,3 @@
   font-weight: 500;
 }
 
-@keyframes Gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}

@@ -2,7 +2,6 @@ import React, { useContext } from 'react'
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
-import './Nav.css';
 import { Button } from 'react-bootstrap';
 import AuthContext from './store/auth-context';
 import { useNavigate } from 'react-router';
@@ -22,7 +21,7 @@ const NavBar = () => {
 
   return (
     <div>
-         <Navbar className='bg' >
+         <Navbar bg="primary"  data-bs-theme="dark">
         <Container>
           <Navbar.Brand >Expense Tracker</Navbar.Brand>
           <Nav className="me-auto">

@@ -1,8 +1,4 @@
 .Container {
-    background: linear-gradient(-45deg, #80ed99, #22577a, #076b70, #4ef037);
-    background-size: 400% 400%;
-    -webkit-animation: Gradient 12s ease infinite;
-    animation: Gradient 12s ease infinite;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
     grid-gap: 10px;
@@ -10,13 +6,6 @@
     height: 100vh;
   }
 
-  .Table {
-    width: 100%;
-    margin-bottom: 1rem;
-    vertical-align: top;
-}
 
 
-.tablebg {
-    background-color: #076b7005;
-}
+

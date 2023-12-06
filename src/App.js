@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import Singup from './component/page/Singup';
 import Login from "./component/page/Login";
 import Home from "./component/page/Home";
@@ -12,10 +12,14 @@ import Expense from "./component/Expenses/Expense";
 
 function App() {
 
+const Navbar = () => {
+  const hiddenRouts = ["/","/Login"];
+  return !hiddenRouts.includes(window.location.pathname);
+}
   
   return (
     <Router>
-      <NavBar />
+      {Navbar() && <NavBar />}
     <Routes>
       <Route path="/" element={<Singup />} />
       <Route path="/Login" element={<Login />} />
