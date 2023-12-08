@@ -13,7 +13,7 @@ import Expense from "./component/Expenses/Expense";
 function App() {
 
 const Navbar = () => {
-  const hiddenRouts = ["/","/Login"];
+  const hiddenRouts = ["/","/Login","forgotpass"];
   return !hiddenRouts.includes(window.location.pathname);
 }
   

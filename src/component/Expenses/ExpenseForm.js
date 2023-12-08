@@ -4,50 +4,36 @@ import AuthContext from "../store/auth-context";
 import { useDispatch } from "react-redux";
 import { expenseAction } from "../store/expenseSlice";
 import "./Style.css";
-import Expense from "./Expense";
 
 const ExpenseTracker = () => {
   const authCtx = useContext(AuthContext);
   const dispatch = useDispatch();
 
-  const [expenseData, setExpenseData] = useState({
-    amount: "",
-    description: "",
-    category: "",
-  });
-
   const [expenses, setExpenses] = useState([]);
+  const [moneySpent, setMoneySpent] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [premium, setPremium] = useState(false);
+
   const userEmail = localStorage.getItem("email");
   const cleanedEmail = userEmail.replace(/[@.]/g, "");
   const [isEdit, setEdit] = useState(false);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setExpenseData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleCategorySelect = (category) => {
-    setExpenseData((prevData) => ({
-      ...prevData,
-      category,
-    }));
-  };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
 
     if (isEdit === true) {
       const newExpense = {
-        amount: expenseData.amount,
-        description: expenseData.description,
-        category: expenseData.category,
+        amount: moneySpent,
+        description: description,
+        category: selectedCategory,
       };
-      const id = localStorage.getItem("id")
+      dispatch(expenseAction.addAmount(moneySpent));
+      dispatch(expenseAction.addDesc(description));
+      dispatch(expenseAction.addCategory(selectedCategory));
+      const id = localStorage.getItem("id");
       fetch(
-        `https://expensetracker-dc96e-default-rtdb.firebaseio.com/userExpenses${cleanedEmail}/${id}.json`,
+        `https://expensetracker-dc96e-default-rtdb.firebaseio.com/userExpenses/${cleanedEmail}/${id}.json`,
         {
           method: "PUT",
           body: JSON.stringify(newExpense),
@@ -64,57 +50,56 @@ const ExpenseTracker = () => {
         .catch((err) => {
           alert("Not able to edit successfully - " + err);
         });
-        setExpenseData({
-          amount: "",
-          description: "",
-          category: "",
-        });
+      setMoneySpent("");
+      setDescription("");
+      setSelectedCategory("");
     } else {
-    const newExpense = {
-      amount: expenseData.amount,
-      description: expenseData.description,
-      category: expenseData.category,
-    };
+      const newExpense = {
+        amount: moneySpent,
+        description: description,
+        category: selectedCategory,
+      };
+      dispatch(expenseAction.addAmount(moneySpent));
+      dispatch(expenseAction.addDesc(description));
+      dispatch(expenseAction.addCategory(selectedCategory));
 
-    fetch(
-      `https://expensetracker-dc96e-default-rtdb.firebaseio.com/userExpenses${cleanedEmail}.json`,
-      {
-        method: "POST",
-        body: JSON.stringify(newExpense),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Something went wrong!");
+      fetch(
+        `https://expensetracker-dc96e-default-rtdb.firebaseio.com/userExpenses/${cleanedEmail}.json`,
+        {
+          method: "POST",
+          body: JSON.stringify(newExpense),
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Expense added successfully!", data);
-        alert("Expense added successfully!");
-        const expenseDataWithId = { ...newExpense, id: data.name };
-        setExpenses((prevExpenses) => [...prevExpenses, expenseDataWithId]);
-        fetchExpenses();
-      })
-      .catch((error) => {
-        console.error("Error adding expense:", error);
-        alert("Error adding expense");
-      });
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Something went wrong!");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Expense added successfully!", data);
+          alert("Expense added successfully!");
+          const expenseDataWithId = { ...newExpense, id: data.name };
+          setExpenses((prevExpenses) => [...prevExpenses, expenseDataWithId]);
+          fetchExpenses();
+        })
+        .catch((error) => {
+          console.error("Error adding expense:", error);
+          alert("Error adding expense");
+        });
 
-    setExpenseData({
-      amount: "",
-      description: "",
-      category: "",
-    });
-  }
+      setMoneySpent("");
+      setDescription("");
+      setSelectedCategory("");
+    }
   };
 
   const fetchExpenses = useCallback(() => {
     fetch(
-      `https://expensetracker-dc96e-default-rtdb.firebaseio.com/userExpenses${cleanedEmail}.json`,
+      `https://expensetracker-dc96e-default-rtdb.firebaseio.com/userExpenses/${cleanedEmail}.json`,
       {
         method: "GET",
         headers: {
@@ -124,29 +109,35 @@ const ExpenseTracker = () => {
     )
       .then((response) => {
         if (response.ok) {
-          return response.json();
+          response.json().then((data) => {
+            let arr = [];
+            for (let key in data) {
+              arr.push({
+                id: key,
+                description: data[key].description,
+                amount: data[key].amount,
+                category: data[key].category,
+              });
+            }
+
+            setExpenses(arr);
+            localStorage.setItem("allExpense", JSON.stringify(arr));
+            dispatch(expenseAction.addExpenses(expenses));
+          });
         } else {
-          throw new Error("Add Expense Failed!!");
-        }
-      })
-      .then((data) => {
-        let arr = [];
-        for (let key in data) {
-          arr.push({
-            id: key,
-            description: data[key].description,
-            amount: data[key].amount,
-            category: data[key].category,
+          response.json().then((data) => {
+            let errorMessage = "Add Expense Failed!!";
+            if (data && data.error && data.error.message) {
+              errorMessage = data.error.message;
+            }
+            throw new Error(errorMessage);
           });
         }
-        setExpenses(arr);
-        localStorage.setItem("allExpense", JSON.stringify(arr));
-        dispatch(expenseAction.addExpenses(arr));
       })
       .catch((err) => {
-        console.error("Error fetching expenses:", err);
+        console.log(err);
       });
-  }, [cleanedEmail, dispatch]);
+  }, [dispatch, cleanedEmail, expenses]);
 
   useEffect(() => {
     fetchExpenses();
@@ -154,7 +145,7 @@ const ExpenseTracker = () => {
 
   const deleteExpenseHandler = (id) => {
     fetch(
-      `https://expensetracker-dc96e-default-rtdb.firebaseio.com/userExpenses${cleanedEmail}/${id}.json`,
+      `https://expensetracker-dc96e-default-rtdb.firebaseio.com/userExpenses/${cleanedEmail}/${id}.json`,
       {
         method: "DELETE",
         headers: {
@@ -178,20 +169,30 @@ const ExpenseTracker = () => {
         alert("Error deleting expense");
       });
   };
+
   const editeExpenseHandler = (id) => {
-    let editExpense = expenses.find((expense) => {
+    let editExpense = expenses.filter((expense) => {
       return expense.id === id;
     });
     setEdit(true);
-    setExpenseData({
-      amount: editExpense.amount,
-      description: editExpense.description,
-      category: editExpense.category,
-    });
+    setMoneySpent(editExpense[0].amount);
+    setDescription(editExpense[0].description);
+    setSelectedCategory(editExpense[0].category);
     console.log(editExpense);
     localStorage.setItem("id", id);
   };
 
+  useEffect(() => {
+    let total = 0;
+    for (let i = 0; i < expenses.length; i++) {
+      total += +expenses[i].amount;
+    }
+    if (total >= 10000) {
+      setPremium(true);
+    } else {
+      setPremium(false);
+    }
+  }, [expenses]);
 
   return (
     <div className="Container">
@@ -214,8 +215,8 @@ const ExpenseTracker = () => {
                     type="text"
                     placeholder="Enter amount"
                     name="amount"
-                    value={expenseData.amount}
-                    onChange={handleInputChange}
+                    value={moneySpent}
+                    onChange={(e) => setMoneySpent(e.target.value)}
                   />
                 </td>
                 <td>
@@ -223,14 +224,18 @@ const ExpenseTracker = () => {
                     type="text"
                     placeholder="Enter description"
                     name="description"
-                    value={expenseData.description}
-                    onChange={handleInputChange}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                   />
                 </td>
                 <td>
-                  <Dropdown onSelect={handleCategorySelect}>
+                  <Dropdown
+                    onSelect={(selectedCategory) =>
+                      setSelectedCategory(selectedCategory)
+                    }
+                  >
                     <Dropdown.Toggle variant="success" id="dropdown-basic">
-                      {expenseData.category || "Select Category"}
+                      {selectedCategory || "Select Category"}
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                       <Dropdown.Item eventKey="Food">Food</Dropdown.Item>
@@ -259,26 +264,41 @@ const ExpenseTracker = () => {
             <div>
               <h3>Expenses</h3>
               <ul>
-                {expenses.map((expense) => (
-                  <li key={expense.id}>
-                    {`Amount: ${expense.amount}, Description: ${expense.description}, Category: ${expense.category}`}
-                    <Button
-                      variant="danger"
-                      style={{ marginLeft: "10px" }}
-                      onClick={() => deleteExpenseHandler(expense.id)}
-                    >
-                      Delete
-                    </Button>
-                    <Button
-                      variant="success"
-                      style={{ marginLeft: "10px", margin: "3px" }}
-                      onClick={() => editeExpenseHandler(expense.id)}
-                    >
-                      Edit
-                    </Button>
-                  </li>
-                ))}
+                {Array.isArray(expenses) &&
+                  expenses.map((expense, index) => (
+                    <li key={index} id={expense.id}>
+                      {`Amount: ${expense.amount}, Description: ${expense.description}, Category: ${expense.category}`}
+                      <Button
+                        variant="danger"
+                        style={{ marginLeft: "10px" }}
+                        onClick={() => deleteExpenseHandler(expense.id)}
+                      >
+                        Delete
+                      </Button>
+                      <Button
+                        variant="success"
+                        style={{ marginLeft: "10px", margin: "3px" }}
+                        onClick={() => editeExpenseHandler(expense.id)}
+                      >
+                        Edit
+                      </Button>
+                    </li>
+                  ))}
               </ul>
+            </div>
+            <div>
+              {premium && (
+                <Button
+                  variant="success"
+                  style={{
+                    marginLeft: "10px",
+                    margin: "3px",
+                    backgroundColor: "violet",
+                  }}
+                >
+                  Activate Premium
+                </Button>
+              )}
             </div>
           </div>
         </div>
