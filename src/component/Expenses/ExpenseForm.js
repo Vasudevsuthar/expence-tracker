@@ -1,9 +1,12 @@
 import React, { useContext, useState, useEffect, useCallback } from "react";
 import { Table, Button, Dropdown } from "react-bootstrap";
 import AuthContext from "../store/auth-context";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { expenseAction } from "../store/expenseSlice";
-import "./Style.css";
+import { toggleDarkMode } from "../store/themeSlice";
+import { CSVLink } from "react-csv";
+import { IoMdCloudDownload } from "react-icons/io";
+
 
 const ExpenseTracker = () => {
   const authCtx = useContext(AuthContext);
@@ -14,10 +17,16 @@ const ExpenseTracker = () => {
   const [description, setDescription] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [premium, setPremium] = useState(false);
+  const [premiumActive, setPremiumActive] = useState(
+    localStorage.getItem("premiumActivated")
+  );
 
+  const [csvData, setCsv] = useState("No Data");
   const userEmail = localStorage.getItem("email");
   const cleanedEmail = userEmail.replace(/[@.]/g, "");
   const [isEdit, setEdit] = useState(false);
+
+  const darkMode = useSelector((state) => state.theme.darkMode);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -119,7 +128,7 @@ const ExpenseTracker = () => {
                 category: data[key].category,
               });
             }
-
+            setCsv(arr);
             setExpenses(arr);
             localStorage.setItem("allExpense", JSON.stringify(arr));
             dispatch(expenseAction.addExpenses(expenses));
@@ -187,122 +196,174 @@ const ExpenseTracker = () => {
     for (let i = 0; i < expenses.length; i++) {
       total += +expenses[i].amount;
     }
-    if (total >= 10000) {
+    if (total >= 10000 && premiumActive === null) {
       setPremium(true);
     } else {
       setPremium(false);
     }
-  }, [expenses]);
+  }, [expenses, premiumActive]);
+  
+  const activatePremiumHandler = () => {
+    if (premium === true) {
+      setPremiumActive(true);
+      localStorage.setItem("premiumActivated", true);
+      setPremium(false);
+    } else {
+      setPremiumActive(false);
+      localStorage.removeItem("premiumActivated");
+    }
+  };
+
+  let header = [
+    {
+      label: "Amount",
+      key: "amount",
+    },
+    {
+      label: "Description",
+      key: "description",
+    },
+    {
+      label: "Category",
+      key: "category",
+    },
+  ];
 
   return (
-    <div className="Container">
-      {authCtx.isLoggedIn && (
-        <div className="itemContainer">
-          <h2>Expense Tracker</h2>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Amount</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <input
-                    type="text"
-                    placeholder="Enter amount"
-                    name="amount"
-                    value={moneySpent}
-                    onChange={(e) => setMoneySpent(e.target.value)}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    placeholder="Enter description"
-                    name="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </td>
-                <td>
-                  <Dropdown
-                    onSelect={(selectedCategory) =>
-                      setSelectedCategory(selectedCategory)
-                    }
-                  >
-                    <Dropdown.Toggle variant="success" id="dropdown-basic">
-                      {selectedCategory || "Select Category"}
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item eventKey="Food">Food</Dropdown.Item>
-                      <Dropdown.Item eventKey="Petrol">Petrol</Dropdown.Item>
-                      <Dropdown.Item eventKey="Salary">Salary</Dropdown.Item>
-                      <Dropdown.Item eventKey="Shopping">
-                        Shopping
-                      </Dropdown.Item>
-                      <Dropdown.Item eventKey="Other">Other</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </td>
-                <td>
+    <div>
+      <div style={{background: darkMode ? 'rgba(0, 0, 0, 0.600)' : 'white', color: darkMode ? 'white' : 'black' , height: '100vh'}}>
+        {authCtx.isLoggedIn && (
+          <div className="itemContainer">
+            <div  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2>Expense Tracker</h2>
+            {premiumActive && (
+            <Button
+            variant="secondary"
+            style={{ padding: "5px", margin: "10px" }}
+              onClick={() => dispatch(toggleDarkMode())}>
+              Toggle Dark Mode
+            </Button>
+          )}
+          </div>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Amount</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <input
+                      type="text"
+                      placeholder="Enter amount"
+                      name="amount"
+                      value={moneySpent}
+                      onChange={(e) => setMoneySpent(e.target.value)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      placeholder="Enter description"
+                      name="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </td>
+                  <td>
+                    <Dropdown
+                      onSelect={(selectedCategory) =>
+                        setSelectedCategory(selectedCategory)
+                      }
+                    >
+                      <Dropdown.Toggle variant="success" id="dropdown-basic">
+                        {selectedCategory || "Select Category"}
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu>
+                        <Dropdown.Item eventKey="Food">Food</Dropdown.Item>
+                        <Dropdown.Item eventKey="Petrol">Petrol</Dropdown.Item>
+                        <Dropdown.Item eventKey="Salary">Salary</Dropdown.Item>
+                        <Dropdown.Item eventKey="Shopping">
+                          Shopping
+                        </Dropdown.Item>
+                        <Dropdown.Item eventKey="Other">Other</Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </td>
+                  <td>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      onClick={handleFormSubmit}
+                    >
+                      Add Expense
+                    </Button>
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+            <div>
+              <div>
+                <h3>Expenses</h3>
+                <ul>
+                  {Array.isArray(expenses) &&
+                    expenses.map((expense, index) => (
+                      <li key={index} id={expense.id}>
+                        {`Amount: ${expense.amount}, Description: ${expense.description}, Category: ${expense.category}`}
+                        <Button
+                          variant="danger"
+                          style={{ marginLeft: "10px" }}
+                          onClick={() => deleteExpenseHandler(expense.id)}
+                        >
+                          Delete
+                        </Button>
+                        <Button
+                          variant="success"
+                          style={{ marginLeft: "10px", margin: "3px" }}
+                          onClick={() => editeExpenseHandler(expense.id)}
+                        >
+                          Edit
+                        </Button>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {premium && (
                   <Button
-                    variant="primary"
-                    type="submit"
-                    onClick={handleFormSubmit}
+                    variant="success"
+                    style={{
+                      marginLeft: "10px",
+                      margin: "3px",
+                      backgroundColor: "violet",
+                    }}
+                    onClick={activatePremiumHandler}
                   >
-                    Add Expense
+                    Activate Premium
                   </Button>
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-          <div>
-            <div>
-              <h3>Expenses</h3>
-              <ul>
-                {Array.isArray(expenses) &&
-                  expenses.map((expense, index) => (
-                    <li key={index} id={expense.id}>
-                      {`Amount: ${expense.amount}, Description: ${expense.description}, Category: ${expense.category}`}
-                      <Button
-                        variant="danger"
-                        style={{ marginLeft: "10px" }}
-                        onClick={() => deleteExpenseHandler(expense.id)}
-                      >
-                        Delete
-                      </Button>
-                      <Button
-                        variant="success"
-                        style={{ marginLeft: "10px", margin: "3px" }}
-                        onClick={() => editeExpenseHandler(expense.id)}
-                      >
-                        Edit
-                      </Button>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-            <div>
-              {premium && (
-                <Button
-                  variant="success"
-                  style={{
-                    marginLeft: "10px",
-                    margin: "3px",
-                    backgroundColor: "violet",
-                  }}
-                >
-                  Activate Premium
-                </Button>
-              )}
+                )}
+                {premiumActive && (
+            <Button  style={{
+              marginLeft: "10px",
+              margin: "3px",
+              backgroundColor: "grey",
+              color: "black",
+            }}>
+              <CSVLink data={csvData} headers={header} filename="expenses.csv"  style={{ color: "white" }}>
+              <IoMdCloudDownload style={{color: "white"}}/>
+                Download Expense File
+              </CSVLink>
+            </Button>
+          )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

@@ -3,3 +3,8 @@
 .bg {
     background: linear-gradient(-45deg, #80ed99, #076b70);
 }
+.navcontainer {
+  max-width: 800px;
+ 
+  padding: 20px;
+}

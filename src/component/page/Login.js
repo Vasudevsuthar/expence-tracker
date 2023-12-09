@@ -43,6 +43,7 @@ const Login = () => {
         authCtx.login(data.idToken, enteredEmail);
         alert("Login successful");
         navigate("/home");
+        window.location.reload();
       } else {
         const errorData = await response.json();
         throw new Error(errorData.error.message);
