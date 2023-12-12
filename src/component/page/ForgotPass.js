@@ -56,6 +56,7 @@ const ForgetPassword = () => {
 
   return (
     <div className={"lContainer"}>
+      <h1>Expense Tracker</h1>
       <div className="1Item">
         <div className="loginForm">
           <h1 className="h1">Forget Password</h1>

@@ -1,11 +1,9 @@
 import React, { useContext, useState } from "react";
 import AuthContext from "../store/auth-context";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import classes from "./Home.module.css";
-import { Button } from "react-bootstrap";
 
 const Home = () => {
-  const navigate = useNavigate();
   const [error, setError] = useState("");
   const authCtx = useContext(AuthContext);
 
@@ -46,14 +44,6 @@ const Home = () => {
       });
   };
 
-  const logoutHandler = () => {
-    authCtx.logout();
-    localStorage.removeItem("email");
-    localStorage.removeItem("token");
-    localStorage.removeItem("allExpense");
-    localStorage.clear();
-    navigate("/");
-  };
 
   return (
     <div className={classes.lContainer}>

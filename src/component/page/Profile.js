@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import  "./Profile.css";
 import { BsGithub, BsGlobe } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
-import AuthContext from "../store/auth-context";
 
 
 const Profile = () => {

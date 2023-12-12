@@ -23,7 +23,7 @@ const ExpenseTracker = () => {
 
   const [csvData, setCsv] = useState("No Data");
   const userEmail = localStorage.getItem("email");
-  const cleanedEmail = userEmail.replace(/[@.]/g, "");
+  const cleanedEmail = userEmail ? userEmail.replace(/[@.]/g, "") : "";
   const [isEdit, setEdit] = useState(false);
 
   const darkMode = useSelector((state) => state.theme.darkMode);

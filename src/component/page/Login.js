@@ -10,7 +10,6 @@ const Login = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
-  const [isLogin, setIsLogin] = useState(true);
   const authCtx = useContext(AuthContext);
 
   const submitHandler = async (event) => {
@@ -58,6 +57,7 @@ const Login = () => {
 
   return (
     <div className="lContainer">
+        <h1>Expense Tracker</h1>
       <div className="1Item">
         <div className="loginForm">
           <h1 className="h1">Login</h1>
